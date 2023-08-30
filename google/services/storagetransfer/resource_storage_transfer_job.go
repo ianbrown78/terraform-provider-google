@@ -186,13 +186,13 @@ func ResourceStorageTransferJob() *schema.Resource {
 							Description: `Specifies the data and time at which Storage Transfer Service stops listening for events from this stream.`,
 						},
 						"force_send_fields": {
-							Type: 		 schema.TypeList,
+							Type:        schema.TypeList,
 							Optional:    true,
 							Description: `ForceSendFields is a list of field names (e.g. "EventStreamExpirationTime") to unconditionally include in API requests.`,
 						},
 						"null_fields": {
-							Type: 		 schema.TypeList,
-							Optional: 	 true,
+							Type:        schema.TypeList,
+							Optional:    true,
 							Description: `NullFields is a list of field names (e.g. "EventStreamExpirationTime") to include in API requests with the JSON null value.`,
 						},
 					},
@@ -723,6 +723,13 @@ func resourceStorageTransferJobUpdate(d *schema.ResourceData, meta interface{}) 
 		fieldMask = append(fieldMask, "schedule")
 		if v, ok := d.GetOk("schedule"); ok {
 			transferJob.Schedule = expandTransferSchedules(v.([]interface{}))
+		}
+	}
+
+	if d.HasChange("event_stream") {
+		fieldMask = append(fieldMask, "event_stream")
+		if v, ok := d.GetOk("event_stream"); ok {
+			transferJob.EventStream = expandEventStream(v.([]interface{}))
 		}
 	}
 
