@@ -164,6 +164,40 @@ func ResourceStorageTransferJob() *schema.Resource {
 				},
 				Description: `Transfer specification.`,
 			},
+			"event_stream": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: `Specifies a unique name of the resource`,
+						},
+						"event_stream_start_time": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: `Specifies the date and time that Storage Transfer Service starts listening for events from this stream.`,
+						},
+						"event_stream_expiration_time": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: `Specifies the data and time at which Storage Transfer Service stops listening for events from this stream.`,
+						},
+						"force_send_fields": {
+							Type: 		 schema.TypeList,
+							Optional:    true,
+							Description: `ForceSendFields is a list of field names (e.g. "EventStreamExpirationTime") to unconditionally include in API requests.`,
+						},
+						"null_fields": {
+							Type: 		 schema.TypeList,
+							Optional: 	 true,
+							Description: `NullFields is a list of field names (e.g. "EventStreamExpirationTime") to include in API requests with the JSON null value.`,
+						},
+					},
+				},
+			},
 			"notification_config": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -566,6 +600,7 @@ func resourceStorageTransferJobCreate(d *schema.ResourceData, meta interface{}) 
 		Description:        d.Get("description").(string),
 		ProjectId:          project,
 		Status:             d.Get("status").(string),
+		EventStream:        expandEventStream(d.Get("event_stream").([]interface{})),
 		Schedule:           expandTransferSchedules(d.Get("schedule").([]interface{})),
 		TransferSpec:       expandTransferSpecs(d.Get("transfer_spec").([]interface{})),
 		NotificationConfig: expandTransferJobNotificationConfig(d.Get("notification_config").([]interface{})),
@@ -872,6 +907,22 @@ func expandTransferSchedules(transferSchedules []interface{}) *storagetransfer.S
 		ScheduleEndDate:   expandDates(schedule["schedule_end_date"].([]interface{})),
 		StartTimeOfDay:    expandTimeOfDays(schedule["start_time_of_day"].([]interface{})),
 		RepeatInterval:    schedule["repeat_interval"].(string),
+	}
+}
+
+func expandEventStream(eventStreams []interface{}) *storagetransfer.EventStream {
+	if len(eventStreams) == 0 || eventStreams[0] == nil {
+		return nil
+	}
+
+	eventStream := eventStreams[0].(map[string]interface{})
+
+	return &storagetransfer.EventStream{
+		Name:                      eventStream["name"].(string),
+		EventStreamExpirationTime: eventStream["event_stream_expiration_time"].(string),
+		EventStreamStartTime:      eventStream["event_stream_start_time"].(string),
+		ForceSendFields:           eventStream["force_send_fields"].([]string),
+		NullFields:                eventStream["null_fields"].([]string),
 	}
 }
 
