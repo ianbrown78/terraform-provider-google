@@ -161,6 +161,18 @@ The following arguments are supported:
 
 * `repeat_interval` - (Optional) Interval between the start of each scheduled transfer. If unspecified, the default value is 24 hours. This value may not be less than 1 hour. A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s".
 
+<a name="nested_event_stream"></a>The `event_stream` block supports:
+
+* `name` - (Required) Specifies a unique name of the resource such as AWS SQS ARN in the form 'arn:aws:sqs:region:account_id:queue_name', or Pub/Sub subscription resource name in the form 'projects/{project}/subscriptions/{sub}'.
+
+* `event_stream_start_time` - (Optional) EventStreamStartTime: Specifies the date and time that Storage Transfer Service starts listening for events from this stream. If no start time is specified or start time is in the past, Storage Transfer Service starts listening immediately.
+
+* `event_stream_expiration_time` - (Optional) EventStreamExpirationTime: Specifies the data and time at which Storage Transfer Service stops listening for events from this stream. After this time, any transfers in progress will complete, but no new transfers are initiated.
+
+* `force_send_fields` - (Optional) ForceSendFields is a list of field names (e.g. "EventStreamExpirationTime") to unconditionally include in API requests. By default, fields with empty or default values are omitted from API requests. However, any non-pointer, non-interface field appearing in ForceSendFields will be sent to the server regardless of whether the field is empty or not. This may be used to include empty fields in Patch requests.
+
+* `null_fields` - (Optional) NullFields is a list of field names (e.g. "EventStreamExpirationTime") to include in API requests with the JSON null value. By default, fields with empty values are omitted from API requests. However, any field with an empty value appearing in NullFields will be sent to the server as null. It is an error if a field in this list has a non-empty value. This may be used to include null fields in Patch requests.
+
 <a name="nested_object_conditions"></a>The `object_conditions` block supports:
 
 * `max_time_elapsed_since_last_modification` - (Optional) A duration in seconds with up to nine fractional digits, terminated by 's'. Example: "3.5s".
